@@ -1,0 +1,76 @@
+{
+  "_meta": {
+    "sources": [
+      "loopback/common/models",
+      "loopback/server/models",
+      "../common/models",
+      "./models"
+    ],
+    "mixins": [
+      "loopback/common/mixins",
+      "loopback/server/mixins",
+      "../common/mixins",
+      "./mixins"
+    ]
+  },
+  "User": {
+    "dataSource": "mongo",
+    "public": false
+  },
+  "AccessToken": {
+    "dataSource": "mongo",
+    "public": true
+  },
+  "ACL": {
+    "dataSource": "mongo",
+    "public": true
+  },
+  "RoleMapping": {
+    "dataSource": "mongo",
+    "public": true,
+    "options": {
+      "strictObjectIDCoercion": true
+    }
+  },
+  "Role": {
+    "dataSource": "mongo",
+    "public": true
+  },
+  "Book": {
+    "dataSource": "mongo",
+    "public": true,
+    "options": {
+      "remoting": {
+        "sharedMethods": {
+          "*": false,
+          "create": true,
+          "find": true,
+          "deleteBook": true,
+          "CountBook": true,
+          "updates": true
+        }
+      }
+    }
+  },
+  "Notify": {
+    "dataSource": "mongo",
+    "public": true,
+    "options": {
+      "remoting": {
+        "sharedMethods": {
+          "*": false,
+          "find": true,
+          "RequestBook": true,
+          "ReturnBook": true,
+          "VerifyRequest": true,
+          "DeleteNote": true,
+          "PendingStatus": true
+        }
+      }
+    }
+  },
+  "Users": {
+    "dataSource": "mongo",
+    "public": true
+  }
+}
