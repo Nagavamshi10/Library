@@ -4,7 +4,7 @@
     "connector": "memory"
   },
   "mongo": {
-    "url": "mongodb+srv://vamc:4815@blogdata.tdm10ab.mongodb.net/LibraryManagement?retryWrites=true&w=majority",
+    "url": "mongodb+srv://username:password@blogdata.tdm10ab.mongodb.net/LibraryManagement?retryWrites=true&w=majority",
     "database": "LibraryManagement",
     "password": "4815",
     "name": "mongo",
