@@ -3,18 +3,23 @@
 module.exports = function(User) {
     // To create a remote hook for checking unqiue username ,RollNo
     User.beforeRemote('create', function(ctx, data, next) {
-        console.log(ctx.req.body);
+        console.log("before create");
+        //console.log(ctx.req.body);
       const myUsername = ctx.req.body.Username;
       const myRollNo = ctx.req.body.RollNo;
+      console.log(myUsername+" "+myRollNo);
       User.findOne({ where: {Username: myUsername } }, function(err, result) {
-        if (err) return next(err);
+        if (err){
+            console.log("err 1");
+            return  next(err);
+        } 
+        //next(err);
         if (result) {
           const error = new Error(` This Username:'${myUsername}' already exists in the DB`);
           error.statusCode = 422;
           console.log("inside 1");
           return next(error);
         }
-        next();
       });
       User.findOne({ where: { RollNo: myRollNo } }, function(err, result) {
         if (err) return next(err);
@@ -24,16 +29,17 @@ module.exports = function(User) {
           console.log("inside 2");
           return next(error);
         }
-        next();
+        //next();
       });
+      next();
     });
 
     // TO Map with Role after create user 
     User.afterRemote('create', function(context,data,next) {
         console.log(data);
         //console.log("name :"+context.result.__data.Role);
-             const userID=data.__data.id;
-                User.app.models.Role.findOne({where:{name:data.__data.Role}},function(err,role){
+             const userID=data.id;
+                User.app.models.Role.findOne({where:{name:data.Role}},function(err,role){
                     if(err) throw err;
                     console.log(role);
                     if(role!=null&&role.__data!=null){

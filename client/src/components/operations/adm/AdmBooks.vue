@@ -2,14 +2,15 @@
     <div>
       <Navbar/>
       <div class="row justify-content-center"> 
-  <table class="table table-hover" style="width:70%">
-    <thead>
+  <table class="table table-striped" style="width:70%">
+    <thead class="thead-dark">
       <tr>
         <th >S.No.</th>
         <th>Name</th>
         <th>Total Copies</th>
         <th >Available Copies</th>
         <th>AssignedTo</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -20,13 +21,14 @@
         <td>{{book.Nocount}}</td>
         <td>{{book.AssignedTo.join()}}</td>
         <td v-if="book.AssignedTo.length==0">
-        <button class="btn btn-outline-success" @click.prevent="setToDeleteBook(index)">Delete</button>
+        <button class="btn btn-warning" @click.prevent="setToDeleteBook(index)">Delete</button>
         </td>
+        <td v-else></td>
       </tr>
     </tbody>
     <tfoot>
       <tr>
-        <td colspan="8" align="center"><router-link to="/AddBooks"><button class="btn btn-outline-primary">Add Books</button></router-link></td>
+        <td colspan="8" align="center"><router-link to="/AddBooks"><button class="btn btn-dark">Add Books</button></router-link></td>
       </tr>
     </tfoot>
   </table>

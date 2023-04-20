@@ -2,12 +2,14 @@
    <div>
     <Navbar></Navbar>
       <div class="row justify-content-center">
-  <table class="table table-hover" style="width:70%">
-    <thead>
+  <table class="table table-striped" style="width:70%">
+    <thead class="thead-dark">
       <tr>
         <th >S.No.</th>
         <th>Book</th>
         <th >RequestBy</th>
+        <th></th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -16,10 +18,10 @@
         <td>{{book.title}}</td>
         <td>{{book.name}}</td>
         <td>
-      <button class="btn btn-outline-success" @click.prevent="setToAccept(index)">Accept</button>
+      <button class="btn btn-success" @click.prevent="setToAccept(index)">Accept</button>
       </td>
       <td>
-      <button class="btn btn-outline-success" @click.prevent="setToReject(index)">Reject</button>
+      <button class="btn btn-warning" @click.prevent="setToReject(index)">Reject</button>
       </td>
       </tr>
     </tbody>

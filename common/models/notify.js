@@ -47,8 +47,8 @@ module.exports = function(Notify) {
                     }
                   })
                   book.find(o => {
-                    // console.log(o.id);
-                        if(o.id.toString() === data[i].Book.toString()) {
+                    //console.log(data[i].__data.Book);
+                        if(o.id.toString() === data[i].__data.Book.toString()) {
                         // console.log(o);
                         data[i].title=o.title;
                       }
@@ -121,9 +121,10 @@ module.exports = function(Notify) {
                cb(err);
            }
            else if(data!=null){
-              if(data.AssignedTo.includes(RequestedBy_id)){
+            for(let i=0;i<data.AssignedTo.length;i++){
+              if(data.AssignedTo[i].toString()===RequestedBy_id){
                 let index=data.AssignedTo.indexOf(RequestedBy_id);
-
+  
                 let array=[];
                 array=[...array,...data.AssignedTo];
                 array.splice(index, 1);
@@ -135,12 +136,11 @@ module.exports = function(Notify) {
                       return cb(err,{"message":"Successfully returned the book"});
                     }
                   });
-              }else{
-                return cb(err,{"message":"You Can't return this Book"});
               }
+            }
 
            }else{
-               return  cb(err,{"message":"No such Book Avaialble in the DB"});
+            return cb(err,{"message":"You Can't return this Book"});
            }
        })
 

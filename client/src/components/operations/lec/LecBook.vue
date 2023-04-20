@@ -2,14 +2,15 @@
   <div>
     <Navbar></Navbar>
     <div class="row justify-content-center">
-<table class="table table-hover" style="width:70%">
-  <thead>
+<table class="table table-striped" style="width:70%">
+  <thead class="thead-dark">
     <tr>
       <th >S.No.</th>
       <th>Name</th>
       <th>Total Copies</th>
       <th >Available Copies</th>
       <th>AssignedTo</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -20,16 +21,16 @@
       <td>{{book.Nocount}}</td>
       <td>{{book.AssignedTo.join()}}</td>
 
-        <td v-if="book.AssignedTo.includes(userName)">
-        <button class="btn btn-outline-success" @click.prevent="setBookReturn(index)">Return</button>
+      <td v-if="book.AssignedTo.includes(userName)">
+        <button class="btn btn-warning" @click.prevent="bookReturn(index)">Return</button>
         </td>
         <div v-else>
-          <td v-if="book.Nocount!=0&&status">
-          <button class="btn btn-outline-success" @click.prevent="setBookRequest(index)">Request</button>
-          </td>
-          <td v-else>
-          <button class="btn btn-outline-success">Waiting</button>
-          </td>
+          <div v-if="Note.every(obj => obj.Book!=book.id)">
+            <button class="btn btn-success" @click.prevent="bookRequest(index)">Request</button>
+          </div>
+          <div v-else>
+            <b style="color: yellow; ">pending...</b>
+          </div>
         </div>
     </tr>
   </tbody>
@@ -52,50 +53,72 @@
             countBook:{},
               Books: [
                 // {"title":"empty"}
+              ],
+              Note:[
+                {
+                  title:'',
+                  name:''
+                }
+
               ]
           }
       },
     methods:{
-        
-          getBook(){
+      getBook(){
             //const token=localStorage.getItem('token');
-            //console.log(token);
-            this.userName=localStorage.getItem('Username');
+            // console.log("inside ");
+            // console.log(this.$store.state.Username);
+            // console.log("outside");
             this.$http.get(`http://localhost:3000/api/Books`).then(res => {
                     this.Books=res.body;
-                    console.log(this.Books);
+                    //console.log(this.Books);
 
                   }).catch(err=>{
                     console.log(err);
                   });
           },
-          setBookRequest(i){
-            console.log(i);
+          bookRequest(index){
+            //console.log(index);
             // const token=localStorage.getItem('token');
-            let Book=this.Books[i].title;
-            let RequestedBy=this.userName;
-            let body={Book,RequestedBy};
+           // console.log
+            let Book_id=this.Books[index].id;
+            let RequestedBy_id=this.id;
+            let body={Book_id,RequestedBy_id};
             console.log(body);
             //const token=localStorage.getItem('token');
             this.$http.post(`http://localhost:3000/api/Notifies/RequestBook`,body).then(res=>{
               console.log(res);
+              this.getNotification()
               this.status=false;
             }).catch(err=>{
               console.log(err);
             })
           },
-          setBookReturn(i){
+          bookReturn(index){
             //console.log(i);
-            let Book=this.Books[i].title;
-            let RequestedBy=this.userName;
-            let body={Book,RequestedBy};
+            let Book_id=this.Books[index].id;
+            let RequestedBy_id=this.id;
+            let body={Book_id,RequestedBy_id};
             console.log(body);
-            //const token=localStorage.getItem('token');
             this.$http.post(`http://localhost:3000/api/Notifies/ReturnBook`,body).then(res=>{
               console.log(res);
+              this.getBook();
+              this.getNotification();
             }).catch(err=>{
               console.log(err);
             })
+          },
+          getNotification(){
+            let body={RequestedBy:this.id};
+            this.$http.post(`http://localhost:3000/api/Notifies/PendingStatus`,body)
+                  .then(res => {
+                    //console.log(res.body.user);
+                    this.Note=res.body.user;
+                    console.log("...");
+                    console.log(this.Note);
+                  }).catch(err=>{
+                    console.log(err);
+                  });
           }
          
       },
@@ -104,6 +127,7 @@
         this.token=this.$store.state.token;
         this.id=this.$store.state.id;
         this.getBook();
+        this.getNotification();
         // const token=localStorage.getItem('token');
         // const source = new EventSource(`http://localhost:3000/api/Books/updates?access_token=${token}`);
         //   source.onmessage = (event) => {

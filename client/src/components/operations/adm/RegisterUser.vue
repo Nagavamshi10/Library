@@ -3,7 +3,7 @@
     <Navbar/>
     <div class="container box">
         <form>
-            <strong><h3><u>Register</u></h3></strong>
+            <strong><h4>ADD USER</h4></strong>
             <div class="form-row display">
               <div class="form-group col-md-5">
                 <label for="Username">Username</label>
@@ -68,7 +68,9 @@ import Navbar from '../../Navbar/Navbar.vue'
         .then(res => {
           console.log(res);
           this.register=true;
-          setTimeout(this.clearPassword,1500)
+          this.$router.push({
+                      name: 'Users'
+                      })
         }, err => {
           console.log(err);
           this.message=err.body.error.message;

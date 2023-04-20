@@ -16,7 +16,7 @@
       "type": "string",
       "required": true
     },
-    "RollNO": {
+    "RollNo": {
       "type": "string",
       "required": true
     }

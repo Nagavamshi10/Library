@@ -2,13 +2,14 @@
   <div>
     <Navbar></Navbar>
     <div class="row justify-content-center">
-<table class="table table-hover" style="width:70%">
-  <thead>
+<table class="table table-striped" style="width:75%">
+  <thead class="thead-dark">
     <tr>
       <th >S.No.</th>
       <th>Name</th>
       <th>Total Copies</th>
       <th >Available Copies</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -19,14 +20,14 @@
       <td>{{book.Nocount}}</td>
 
         <td v-if="book.AssignedTo.includes(userName)">
-        <button class="btn btn-outline-success" @click.prevent="bookReturn(index)">Return</button>
+        <button class="btn btn-warning" @click.prevent="bookReturn(index)">Return</button>
         </td>
         <div v-else>
           <div v-if="Note.every(obj => obj.Book!=book.id)">
-            <button class="btn btn-outline-success" @click.prevent="bookRequest(index)">Request</button>
+            <button class="btn btn-success" @click.prevent="bookRequest(index)">Request</button>
           </div>
           <div v-else>
-            <b style="color: yellow; ">pending...</b>
+            <b style="color: red; ">pending...</b>
           </div>
         </div>
     </tr>
@@ -75,13 +76,13 @@
                   });
           },
           bookRequest(index){
-            console.log(index);
+            //console.log(index);
             // const token=localStorage.getItem('token');
            // console.log
             let Book_id=this.Books[index].id;
             let RequestedBy_id=this.id;
             let body={Book_id,RequestedBy_id};
-            //console.log(body);
+            console.log(body);
             //const token=localStorage.getItem('token');
             this.$http.post(`http://localhost:3000/api/Notifies/RequestBook`,body).then(res=>{
               console.log(res);
@@ -96,7 +97,7 @@
             let Book_id=this.Books[index].id;
             let RequestedBy_id=this.id;
             let body={Book_id,RequestedBy_id};
-            //console.log(body);
+            console.log(body);
             this.$http.post(`http://localhost:3000/api/Notifies/ReturnBook`,body).then(res=>{
               console.log(res);
               this.getBook();
@@ -123,7 +124,7 @@
       mounted() {
         this.userName=this.$store.state.Username;
         this.token=this.$store.state.token;
-       this.id=this.$store.state.id;
+        this.id=this.$store.state.id;
         this.getBook();
         this.getNotification();
         // const token=localStorage.getItem('token');

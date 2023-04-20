@@ -20,27 +20,33 @@ module.exports = function(Book) {
 
     // change userid to usernames
     Book.afterRemote('find', function(ctx, data, next) {
-      console.log("ctx data");
-      console.log(ctx);
+      //console.log("ctx data");
+      //console.log(ctx);
       Book.app.models.Users.find((err,result)=>{
         if(err){
           console.log(err);
         }
+        const array=result;
+       // console.log(result);
         for(let i=0;i<data.length;i++){
-  
+          //console.log("1");
               for(let j=0;j<data[i].AssignedTo.length;j++){
+                //console.log("2");
                 // console.log(data[i].AssignedTo[j])
-                 result.find(o => {
-                  if(o.id.toString() === data[i].AssignedTo[j]) {
-                  // console.log(o);
-                  data[i].AssignedTo[j]=o.Username;
-                }
-              });
+                array.find(o => {
+                  //console.log(o);
+                  if(o.id.toString() == data[i].AssignedTo[j]) {
+                    //console.log(o.Username);
+                    data[i].AssignedTo[j]=o.Username;
+                  }
+                });
                 
-            }
+              }
           }
+          //console.log('final data',data[0].AssignedTo);
+          next();
+        //});
         //console.log('final data',data);
-        next();
       });
     });
 

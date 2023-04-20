@@ -2,12 +2,13 @@
     <div>
       <Navbar/>
     <div class="row justify-content-center">
-<table class="table table-hover" style="width:70%">
-  <thead>
+<table class="table table-striped" style="width:70%">
+  <thead class="thead-dark">
     <tr>
       <th >S.No.</th>
       <th>Name</th>
       <th >Role</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -16,14 +17,15 @@
       <td>{{user.Username}}</td>
       <td>{{user.Role}}</td>
         <td v-if="user.Role!='Admin'">
-        <button class="btn btn-outline-success"  @click.prevent="setToDeleteUser(index)">Delete</button>
+        <button class="btn btn-warning"  @click.prevent="setToDeleteUser(index)">Delete</button>
         </td>
+        <td v-else></td>
 
     </tr>
   </tbody>
   <tfoot>
       <tr>
-        <td colspan="8" align="center"><router-link to="/Register"><button class="btn btn-outline-primary">Add User</button></router-link></td>
+        <td colspan="8" align="center"><router-link to="/Register"><button class="btn btn-dark">Add User</button></router-link></td>
       </tr>
     </tfoot>
 </table>
