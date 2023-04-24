@@ -29,7 +29,7 @@
             <button class="btn btn-success" @click.prevent="bookRequest(index)">Request</button>
           </div>
           <div v-else>
-            <b style="color: yellow; ">pending...</b>
+            <b style="color: red; ">pending...</b>
           </div>
         </div>
     </tr>
@@ -83,7 +83,9 @@
            // console.log
             let Book_id=this.Books[index].id;
             let RequestedBy_id=this.id;
-            let body={Book_id,RequestedBy_id};
+            let Bookname=this.Books[index].title;
+            let username=this.userName;
+            let body={Book_id,RequestedBy_id,Bookname,username};
             console.log(body);
             //const token=localStorage.getItem('token');
             this.$http.post(`http://localhost:3000/api/Notifies/RequestBook`,body).then(res=>{
@@ -98,18 +100,21 @@
             //console.log(i);
             let Book_id=this.Books[index].id;
             let RequestedBy_id=this.id;
-            let body={Book_id,RequestedBy_id};
+            let Bookname=this.Books[index].title;
+            let username=this.userName;
+            let body={Book_id,RequestedBy_id,Bookname,username};
             console.log(body);
             this.$http.post(`http://localhost:3000/api/Notifies/ReturnBook`,body).then(res=>{
               console.log(res);
-              this.getBook();
+              //this.getBook();
               this.getNotification();
+              this.getBook();
             }).catch(err=>{
               console.log(err);
             })
           },
           getNotification(){
-            let body={RequestedBy:this.id};
+            let body={id:this.id};
             this.$http.post(`http://localhost:3000/api/Notifies/PendingStatus`,body)
                   .then(res => {
                     //console.log(res.body.user);
@@ -140,6 +145,7 @@
       updated(){
         setTimeout(() => {
           this.getBook();
+          this.getNotification();
         }, 15000);
         
       },

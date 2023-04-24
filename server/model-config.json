@@ -64,7 +64,8 @@
           "ReturnBook": true,
           "VerifyRequest": true,
           "DeleteNote": true,
-          "PendingStatus": true
+          "PendingStatus": true,
+          "forgetPassword":true
         }
       }
     }

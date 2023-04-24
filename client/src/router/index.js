@@ -10,6 +10,8 @@ import Notify from '../components/operations/adm/NoteRequest.vue';
 import Register from '../components/operations/adm/RegisterUser.vue';
 import deletes from '../components/operations/adm/DeleteUser.vue';
 import adds from '../components/operations/adm/AddBook.vue';
+import forget from '../components/forgetpassword.vue';
+import reset from '../components/reset.vue';
 import { store } from '../store/store';
 Vue.use(VueRouter);
 
@@ -109,6 +111,24 @@ const routes = [
         path: '/logout',
         name: 'logout',
         component: logout,
+        meta: {
+            requiresAuth: false,
+            requiredRole: null
+          }
+    },
+    {
+        path: '/forget',
+        name: 'forget',
+        component: forget,
+        meta: {
+            requiresAuth: false,
+            requiredRole: null
+          }
+    },
+    {
+        path: '/reset',
+        name: 'reset',
+        component: reset,
         meta: {
             requiresAuth: false,
             requiredRole: null

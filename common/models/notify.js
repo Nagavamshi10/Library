@@ -1,34 +1,10 @@
 'use strict';
-
+const email = require('../../server/email');
 const l = require("loopback");
 const { findById } = require("loopback-datasource-juggler/lib/dao");
 module.exports = function(Notify) {
-  // function  getBooks(){
-  //     Notify.app.models.Users.find((err,result)=>{
-  //       if(err){
-  //         console.log(err);
-  //       }
-  //       return result;
-  //     })
-  //     // return '1234'
-  //   }
-  //   function getUsers(){
-  //     Notify.app.models.Book.find((err,result)=>{
-  //       if(err){
-  //         console.log(err);
-  //       }
-  //       console.log(result);
-  //       return result;
-  //     })
-  //   }
     // chance bookid to book name and userid to user name 
     Notify.afterRemote('find', function(ctx, data, next) {
-      // console.log('dataall',data);
-      // const users= await getUsers();
-      // const books =await getBooks();
-      // console.log('users',users);
-      // console.log('boojks',books)
-      // next();
       Notify.app.models.Users.find((err,result)=>{
             if(err){
               console.log(err);
@@ -54,31 +30,15 @@ module.exports = function(Notify) {
                       }
                     })
               }
-              // for(let j=0;j<data[i].AssignedTo.length;j++){
-                //   // console.log(data[i].AssignedTo[j])
-                //    result.find(o => {
-                //     if(o.id.toString() === data[i].AssignedTo[j]) {
-                //     // console.log(o);
-                //     data[i].AssignedTo[j]=o.Username;
-                  // }
-                // });
-                // console.log('final data',data);
                 next();
               // }
               });
             
-      //       // for(let j=0;j<data[i].AssignedTo.length;j++){
-      //             //   // console.log(data[i].AssignedTo[j])
-      //             //    result.find(o => {
-      //             //     if(o.id.toString() === data[i].AssignedTo[j]) {
-      //             //     // console.log(o);
-      //             //     data[i].AssignedTo[j]=o.Username;
-      //             //   }
-      //             // });
+
           });
         });
     // request Book by student or lecture
-    Notify.RequestBook=function(Book_id,RequestedBy_id,cb)
+    Notify.RequestBook=function(Book_id,RequestedBy_id,Bookname,username,cb)
        {
         //console.log(Book);
         // findById('id', function (err,data))
@@ -92,6 +52,11 @@ module.exports = function(Notify) {
                     Notify.create({Book:Book_id,RequestedBy:RequestedBy_id},function(err,user){
                      if(err) return cb(err);
             // console.log(user);
+                      const to = 'battuvamshi08@gmail.com';
+                      const subject = 'BOOK Request by '+username;
+                      const text = Bookname+' is requested By '+username;
+                      email.sendEmail(to, subject, text);
+            
                     return cb(null,user);
                     });
                 }else{
@@ -107,13 +72,13 @@ module.exports = function(Notify) {
     
        Notify.remoteMethod('RequestBook',
       {
-        accepts:[{arg:'Book_id',type:'string',required: true },{arg:'RequestedBy_id',type:'string',required: true }],
+        accepts:[{arg:'Book_id',type:'string',required: true },{arg:'RequestedBy_id',type:'string',required: true },{arg:'Bookname',type:'string' },{arg:'username',type:'string' }],
         returns:{arg:'user',type:'object'},
         http:{path:'/RequestBook',verb:'post'}
       });
 
       // return Book by student or lecture
-      Notify.ReturnBook=function(Book_id,RequestedBy_id,cb)
+      Notify.ReturnBook=function(Book_id,RequestedBy_id,Bookname,username,cb)
       {
        //console.log(Book);
        Notify.app.models.Book.findOne({where:{_id:Book_id}},function(err,data){
@@ -133,6 +98,10 @@ module.exports = function(Notify) {
                     if (err) {
                       cb(err);
                     } else {
+                      const to = 'battuvamshi08@gmail.com';
+                      const subject = 'BOOK Return By '+username;
+                      const text = Bookname+' is returned By '+username;
+                      email.sendEmail(to, subject, text);
                       return cb(err,{"message":"Successfully returned the book"});
                     }
                   });
@@ -148,7 +117,7 @@ module.exports = function(Notify) {
    
       Notify.remoteMethod('ReturnBook',
      {
-       accepts:[{arg:'Book_id',type:'string',required: true },{arg:'RequestedBy_id',type:'string',required: true }],
+       accepts:[{arg:'Book_id',type:'string',required: true },{arg:'RequestedBy_id',type:'string',required: true },{arg:'Bookname',type:'string' },{arg:'username',type:'string' }],
        returns:{arg:'user',type:'object'},
        http:{path:'/ReturnBook',verb:'post'}
      });
@@ -188,6 +157,17 @@ module.exports = function(Notify) {
                                   });
                             }
                         });
+                        Notify.app.models.Users.findOne({where:{_id:RequestedBy_id}},function(err,data1){
+                          if(err){
+                            console.log(err);
+                          }
+                          const to = data1.email;
+                          const subject = 'BOOK REQUEST ACCEPTED';
+                        const text = data.title+" is assigned to you" ;
+                      email.sendEmail(to, subject, text);
+
+                        })
+                        
                       return cb(err,{"message":"Successfully Assigned the book"});
                     }
                   });
@@ -223,9 +203,27 @@ module.exports = function(Notify) {
             console.log("3");
             throw err;
         }else{
-            Notify.destroyById(docs.__data.id.toString(),function(err) {
+            Notify.destroyById(docs.id.toString(),function(err) {
                 if (err) throw err;
-              
+                Notify.app.models.Users.findOne({where:{_id:RequestedBy_id}},function(err,data1){
+                  if(err){
+                    console.log(err);
+                  }
+                  Notify.app.models.Book.findOne({where:{_id:Book_id}},function(err,data2){
+                    if(err){
+                      console.log(err);
+                    }
+                    const to = data1.email;
+                    const subject = 'BOOK REQUEST REJECTED';
+                    const text = data2.title+" is can't be assigned to you right now . Contact the Admin" ;
+                    email.sendEmail(to, subject, text);
+                  })
+              //     const to = data1.email;
+              //     const subject = 'BOOK REQUEST ACCEPTED';
+              //   const text = data.title+"is assigned to you" ;
+              // email.sendEmail(to, subject, text);
+
+                })
                 console.log('Model deleted successfully');
               });
         }
@@ -256,5 +254,8 @@ module.exports = function(Notify) {
        returns:{arg:'user',type:'object'},
        http:{path:'/PendingStatus',verb:'post'}
      });
+
+     //forget password
+    
 
 };
