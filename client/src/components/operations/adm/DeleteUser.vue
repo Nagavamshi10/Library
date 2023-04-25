@@ -17,7 +17,7 @@
       <td>{{user.Username}}</td>
       <td>{{user.Role}}</td>
         <td v-if="user.Role!='Admin'">
-        <button class="btn btn-warning"  @click.prevent="setToDeleteUser(index)">Delete</button>
+        <button class="btn btn-warning"  @click.prevent="toDeleteUser(index)">Delete</button>
         </td>
         <td v-else></td>
 
@@ -50,7 +50,7 @@ import Navbar from '../../Navbar/Navbar.vue'
       }
     },
     methods:{
-      setToDeleteUser(i){
+      toDeleteUser(i){
         let Username=this.Users[i].Username;
         let RollNo=this.Users[i].RollNo;
         let body={Username,RollNo}

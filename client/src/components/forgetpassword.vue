@@ -13,10 +13,10 @@
         <br>
     </div>
     <div>
-            <button type="submit" @click.prevent="loginRoute" class="btn btn-link" > ⬅ Login page</button>
+            <router-link to="'/'"><button type="submit"  class="btn btn-link" > ⬅ Login page</button></router-link>
         </div>
-        <div v-if="passwordstatus">
-            <p style="color:green;"> Link successfully sent to your Email</p>
+        <div >
+            <p style="color:green;"> {{passwordstatus}}</p>
         </div>
 </div>
 
@@ -30,19 +30,19 @@ export default{
               password:{
                 email:''
               },
-              passwordstatus:false
+              passwordstatus:''
           }
       },
       methods:{
-        loginRoute(){
-          this.$router.push('/');
-        },
         forgetPassword(){
             let body=this.password;
             console.log(body);
             this.$http.post(`http://localhost:3000/api/users/forgetPassword`,body).then(res=>{
-              console.log(res);
-              this.passwordstatus=true;
+              console.log(res.body.user);
+              this.passwordstatus=res.body.user.message;
+
+              
+              //this.passwordstatus=true;
               //this.$router.push('/');
             }).catch(err=>{
               console.log(err);

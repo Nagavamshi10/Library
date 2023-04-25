@@ -41,7 +41,7 @@
     
     
     <script>
-    import Navbar from '../../Navbar/LectureNav.vue';
+    import Navbar from '../../Navbar/Navbar.vue';
     export default{
       data()
       {
@@ -120,7 +120,7 @@
                     //console.log(res.body.user);
                     this.Note=res.body.user;
                     console.log("...");
-                    console.log(this.Note);
+                    console.log(res.body.user);
                   }).catch(err=>{
                     console.log(err);
                   });

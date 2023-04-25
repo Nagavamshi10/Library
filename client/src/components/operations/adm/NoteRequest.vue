@@ -18,10 +18,10 @@
         <td>{{book.title}}</td>
         <td>{{book.name}}</td>
         <td>
-      <button class="btn btn-success" @click.prevent="setToAccept(index)">Accept</button>
+      <button class="btn btn-success" @click.prevent="toAccept(index)">Accept</button>
       </td>
       <td>
-      <button class="btn btn-warning" @click.prevent="setToReject(index)">Reject</button>
+      <button class="btn btn-warning" @click.prevent="toReject(index)">Reject</button>
       </td>
       </tr>
     </tbody>
@@ -59,7 +59,7 @@
                     console.log(err);
                   });
           },
-          setToAccept(i){
+          toAccept(i){
             console.log("test1")
             let Book_id=this.Note[i].Book;
             let RequestedBy_id=this.Note[i].RequestedBy;
@@ -75,7 +75,7 @@
             })
 
           },
-          setToReject(i){
+          toReject(i){
             console.log(this.Note);
             //http://localhost:3000/api/Notifies/DeleteNote?
             let Book_id=this.Note[i].Book;

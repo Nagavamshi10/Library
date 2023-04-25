@@ -239,12 +239,22 @@ module.exports = function(Notify) {
      });
      
      Notify.PendingStatus=function(id,cb){
+      //console.log('sample',id);
       Notify.find({RequestedBy:id}, function (err, docs){
         if(err){
             console.log("3");
             throw err;
         }else{
-            return cb(err,docs);
+          // console.log('started');
+          // console.log(docs);
+          // console.log('ended');
+          let array=[];
+          docs.forEach((sample)=>{
+            if(sample.RequestedBy.toString() == id){
+              array.push(sample);
+            }
+          })
+            return cb(err,array);
         }
     });
      }

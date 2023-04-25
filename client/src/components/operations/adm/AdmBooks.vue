@@ -21,7 +21,7 @@
         <td>{{book.Nocount}}</td>
         <td>{{book.AssignedTo.join()}}</td>
         <td v-if="book.AssignedTo.length==0">
-        <button class="btn btn-warning" @click.prevent="setToDeleteBook(index)">Delete</button>
+        <button class="btn btn-warning" @click.prevent="toDeleteBook(index)">Delete</button>
         </td>
         <td v-else></td>
       </tr>
@@ -67,7 +67,7 @@
                       
                     });
             },
-            setToDeleteBook(index){
+            toDeleteBook(index){
               console.log(index);
               //const token=localStorage.getItem('token');
               let title=this.Books[index].title

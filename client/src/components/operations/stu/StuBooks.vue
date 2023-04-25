@@ -39,7 +39,7 @@
     
     
     <script>
-    import Navbar from '../../Navbar/StudentNav.vue'
+    import Navbar from '../../Navbar/Navbar.vue'
     export default{
       data()
       {

@@ -26,7 +26,7 @@
         <div v-else>
 
         </div>
-       <button type="submit" @click.prevent="loginRoute" class="btn btn-link" > ⬅ Login page</button>
+        <router-link to="'/'"><button type="submit"  class="btn btn-link" > ⬅ Login page</button></router-link>
         </div>
     </div>
     
@@ -48,9 +48,6 @@
               }
           },
           methods:{
-            loginRoute(){
-              this.$router.push('/');
-            },
             updatePassword(){
                 if(this.body.password===this.password1){
                     this.status=false;
