@@ -14,7 +14,7 @@
                 <input type="number" class="form-control" id="Nocount" name="Nocount" v-model="Book.Nocount" placeholder="0" autocomplete="off">
               </div>
             </div>
-            <button type="submit" @click.prevent="submit" class="btn btn-primary">Add</button>
+            <button type="submit" @click.prevent="submit" class="btn btn-primary">➕ Add</button>
           </form>
           <div v-if="register">
               <p style="color:green;">successfully created!</p>

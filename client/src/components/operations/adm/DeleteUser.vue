@@ -17,7 +17,7 @@
       <td>{{user.Username}}</td>
       <td>{{user.Role}}</td>
         <td v-if="user.Role!='Admin'">
-        <button class="btn btn-warning"  @click.prevent="toDeleteUser(index)">Delete</button>
+        <button class="btn btn-warning"  @click.prevent="toDeleteUser(index)">🗑️ Delete</button>
         </td>
         <td v-else></td>
 
@@ -25,7 +25,7 @@
   </tbody>
   <tfoot>
       <tr>
-        <td colspan="8" align="center"><router-link to="/Register"><button class="btn btn-dark">Add User</button></router-link></td>
+        <td colspan="8" align="center"><router-link to="/Register"><button class="btn btn-dark">➕ Add User</button></router-link></td>
       </tr>
     </tfoot>
 </table>
@@ -52,8 +52,8 @@ import Navbar from '../../Navbar/Navbar.vue'
     methods:{
       toDeleteUser(i){
         let Username=this.Users[i].Username;
-        let RollNo=this.Users[i].RollNo;
-        let body={Username,RollNo}
+        let id=this.Users[i].id;
+        let body={Username,id};
          console.log(body);
         //const token=localStorage.getItem('token');
         this.$http.post(`http://localhost:3000/api/users/DeleteUser`, body)

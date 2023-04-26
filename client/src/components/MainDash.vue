@@ -7,30 +7,30 @@
 
 <script>
     import LoginPage from './LoginPage.vue';
-    import StudentDash from './operations/stu/StuBooks.vue';
-    import LectureDash from './operations/lec/LecBook.vue';
-    import AdminDash from './operations/adm/AdmBooks.vue';
+    import StudentDash from './operations/stu/studentHome.vue';
+    import LectureDash from './operations/lec/lectureHome.vue';
+    import AdminDash from './operations/adm/adminHome.vue';
     export default {
         data: function() {
             return {
-                selectedComponent: 'appLog',
-                myData: this.$store.state.Role
+                selectedComponent: 'appDefault',
+                Role: this.$store.state.Role
             }
         },
         components: {
-            appStu:StudentDash,
-            appLec:LectureDash,
-            appAdm:AdminDash,
-            appLog:LoginPage
+            appStudent:StudentDash,
+            appLecture:LectureDash,
+            appAdmin:AdminDash,
+            appDefault:LoginPage
         },
         methods:{
             getRenderPage(){
-                if(this.myData=='student'){
-                    this.selectedComponent='appStu';
-                }else if(this.myData=='Admin'){
-                    this.selectedComponent='appAdm';
+                if(this.Role=='student'){
+                    this.selectedComponent='appStudent';
+                }else if(this.Role=='Admin'){
+                    this.selectedComponent='appAdmin';
                 }else{
-                    this.selectedComponent='appLec';
+                    this.selectedComponent='appLecture';
                 }
             }
         },

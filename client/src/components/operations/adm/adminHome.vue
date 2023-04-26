@@ -21,14 +21,14 @@
         <td>{{book.Nocount}}</td>
         <td>{{book.AssignedTo.join()}}</td>
         <td v-if="book.AssignedTo.length==0">
-        <button class="btn btn-warning" @click.prevent="toDeleteBook(index)">Delete</button>
+        <button class="btn btn-warning" @click.prevent="toDeleteBook(index)">🗑️Delete</button>
         </td>
         <td v-else></td>
       </tr>
     </tbody>
     <tfoot>
       <tr>
-        <td colspan="8" align="center"><router-link to="/AddBooks"><button class="btn btn-dark">Add Books</button></router-link></td>
+        <td colspan="8" align="center"><router-link to="/AddBooks"><button class="btn btn-dark">➕Add Books</button></router-link></td>
       </tr>
     </tfoot>
   </table>

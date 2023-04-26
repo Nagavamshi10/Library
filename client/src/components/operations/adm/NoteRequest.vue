@@ -18,10 +18,10 @@
         <td>{{book.title}}</td>
         <td>{{book.name}}</td>
         <td>
-      <button class="btn btn-success" @click.prevent="toAccept(index)">Accept</button>
+      <button class="btn btn-success" @click.prevent="toAccept(index)">☑ Accept</button>
       </td>
       <td>
-      <button class="btn btn-warning" @click.prevent="toReject(index)">Reject</button>
+      <button class="btn btn-warning" @click.prevent="toReject(index)">✘ Reject</button>
       </td>
       </tr>
     </tbody>

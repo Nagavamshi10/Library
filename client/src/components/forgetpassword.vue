@@ -6,7 +6,7 @@
             Enter your email address and we'll send you an email with instructions to reset your password.
         </p>
         <div class="form-outline">
-            <input type="email" id="typeEmail" class="form-control my-3" v-model="password.email" />
+            <input type="email" id="typeEmail" class="form-control my-3" v-model="forgetEmail.email" />
             <label class="form-label" for="typeEmail" >Email input</label>
         </div> 
         <button type="submit" @click.prevent="forgetPassword" class="btn btn-primary" >Reset Password</button>
@@ -16,7 +16,7 @@
             <router-link to="'/'"><button type="submit"  class="btn btn-link" > ⬅ Login page</button></router-link>
         </div>
         <div >
-            <p style="color:green;"> {{passwordstatus}}</p>
+            <p style="color:green;"> {{successMessage}}</p>
         </div>
 </div>
 
@@ -27,19 +27,19 @@ export default{
       data()
       {
           return {
-              password:{
+              forgetEmail:{
                 email:''
               },
-              passwordstatus:''
+              successMessage:''
           }
       },
       methods:{
         forgetPassword(){
-            let body=this.password;
+            let body=this.forgetEmail;
             console.log(body);
             this.$http.post(`http://localhost:3000/api/users/forgetPassword`,body).then(res=>{
               console.log(res.body.user);
-              this.passwordstatus=res.body.user.message;
+              this.successMessage=res.body.user.message;
 
               
               //this.passwordstatus=true;

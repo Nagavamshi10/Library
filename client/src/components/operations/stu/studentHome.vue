@@ -2,14 +2,13 @@
   <div>
     <Navbar></Navbar>
     <div class="row justify-content-center">
-<table class="table table-striped" style="width:70%">
+<table class="table table-striped" style="width:75%">
   <thead class="thead-dark">
     <tr>
       <th >S.No.</th>
       <th>Name</th>
       <th>Total Copies</th>
       <th >Available Copies</th>
-      <th>AssignedTo</th>
       <th></th>
     </tr>
   </thead>
@@ -19,17 +18,16 @@
       <td>{{book.title}}</td>
       <td>{{book.Nocount+book.AssignedTo.length}}</td>
       <td>{{book.Nocount}}</td>
-      <td>{{book.AssignedTo.join()}}</td>
 
-      <td v-if="book.AssignedTo.includes(userName)">
-        <button class="btn btn-warning" @click.prevent="bookReturn(index)">Return</button>
+        <td v-if="book.AssignedTo.includes(userName)">
+        <button class="btn btn-warning" @click.prevent="bookReturn(index)">🢘 Return</button>
         </td>
         <div v-else>
           <div v-if="Note.every(obj => obj.Book!=book.id)">
-            <button class="btn btn-success" @click.prevent="bookRequest(index)">Request</button>
+            <button class="btn btn-success" @click.prevent="bookRequest(index)">🢚 Request</button>
           </div>
           <div v-else>
-            <b style="color: red; ">pending...</b>
+            <b style="color: red; ">↻ pending...</b>
           </div>
         </div>
     </tr>
@@ -41,7 +39,7 @@
     
     
     <script>
-    import Navbar from '../../Navbar/Navbar.vue';
+    import Navbar from '../../Navbar/Navbar.vue'
     export default{
       data()
       {
@@ -52,7 +50,7 @@
             id:'',
             countBook:{},
               Books: [
-                // {"title":"empty"}
+                {"title":""}
               ],
               Note:[
                 {
@@ -64,7 +62,7 @@
           }
       },
     methods:{
-      getBook(){
+          getBook(){
             //const token=localStorage.getItem('token');
             // console.log("inside ");
             // console.log(this.$store.state.Username);
@@ -120,11 +118,12 @@
                     //console.log(res.body.user);
                     this.Note=res.body.user;
                     console.log("...");
-                    console.log(res.body.user);
+                    console.log(this.Note);
                   }).catch(err=>{
                     console.log(err);
                   });
           }
+          
          
       },
       mounted() {
@@ -133,21 +132,12 @@
         this.id=this.$store.state.id;
         this.getBook();
         this.getNotification();
-        // const token=localStorage.getItem('token');
-        // const source = new EventSource(`http://localhost:3000/api/Books/updates?access_token=${token}`);
-        //   source.onmessage = (event) => {
-        //   const update = JSON.parse(event.data);
-        //   console.log("update data");
-        //   console.log(update);
-        //   //this.updates.push(update);
-        // };
       },
       updated(){
         setTimeout(() => {
           this.getBook();
           this.getNotification();
-        }, 15000);
-        
+        }, 15000);       
       },
       components:{
         Navbar

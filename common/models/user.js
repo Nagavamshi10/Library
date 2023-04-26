@@ -58,31 +58,31 @@ module.exports = function(User) {
 
 
 
-    User.DeleteUser=function(Username,RollNo,cb){
+    User.DeleteUser=function(Username,id,cb){
         //console.log(Book);
-        User.findOne({where:{Username:Username,RollNo:RollNo}},function(err,data){
+        User.findOne({where:{Username:Username}},function(err,data){
             if(err) {
                 cb(err);
             }
             else if(data!=null){
-                User.app.models.Book.find({where:{AssignedTo:{inq:['vamshi']}}},function(err,role){
+                User.app.models.Book.find({where:{AssignedTo:{inq:[id]}}},function(err,role){
                     if(err) throw err;
                     console.log(role);
                     if(role.length==0){
                         console.log(data);
-                        let id=data.__data.id;
-                        User.destroyById(id,function(err){
+                        let id1=data.__data.id;
+                        User.destroyById(id1,function(err){
                          if(err){
                              console.log(err);
                          }
                          })
-                         User.app.models.RoleMapping.findOne({where:{principalId:id}},function(err,res){
+                         User.app.models.RoleMapping.findOne({where:{principalId:id1}},function(err,res){
                              if(err){
                                  console.log(err);
                              }
-                             let id1=res.__data.id;
+                             let id2=res.id;
                              console.log(res);
-                             User.app.models.RoleMapping.destroyById(id1,function(err){
+                             User.app.models.RoleMapping.destroyById(id2,function(err){
                                  if(err){
                                      console.log(err);
                                  }
@@ -105,7 +105,7 @@ module.exports = function(User) {
     
        User.remoteMethod('DeleteUser',
       {
-        accepts:[{arg:'Username',type:'string',required: true },{arg:'RollNo',type:'string',required: true }],
+        accepts:[{arg:'Username',type:'string',required: true },{arg:'id',type:'string',required: true }],
         returns:{arg:'user',type:'object'},
         http:{path:'/DeleteUser',verb:'post'}
       });
