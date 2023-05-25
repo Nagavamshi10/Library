@@ -93,6 +93,7 @@ module.exports = function(Notify) {
                 let array=[];
                 array=[...array,...data.AssignedTo];
                 array.splice(index, 1);
+                console.log(array);
                 let count=data.__data.Nocount+1;
                 Notify.app.models.Book.updateAll({title:data.__data.title}, { Nocount:count,AssignedTo:array}, function(err,result){
                     if (err) {

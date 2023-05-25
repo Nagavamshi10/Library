@@ -6,19 +6,19 @@
     <nav aria-label="breadcrumb">
      <ol class="navbar-nav mr-auto">
       <div v-if="role=='Admin'">
-            <router-link to="/AdminHome">
+            <router-link to="/MainDash">
               <button class="btn btn-gray fas fa-home">🏠Home</button></router-link>
             <router-link to="/Notification"><button class="btn btn-gray">📫Notification</button></router-link>
             <router-link to="/Users"><button class="btn btn-gray">🧾All Users</button></router-link>
             <router-link to="/logout"><button class="btn btn-gray">➡️logout</button></router-link>
       </div>
       <div v-else-if="role=='student'">
-          <router-link to="/StudentHome">
+          <router-link to="/MainDash">
               <button class="btn btn-gray">🏠Home</button></router-link>
             <router-link to="/logout"><button class="btn btn-gray">➡️logout</button></router-link>
           </div>
           <div v-else>
-            <router-link to="/LectureHome">
+            <router-link to="/MainDash">
               <button class="btn btn-gray">🏠Home</button></router-link>
             <router-link to="/logout"><button class="btn btn-gray">➡️logout</button></router-link>
           </div>

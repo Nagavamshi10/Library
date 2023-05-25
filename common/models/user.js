@@ -76,6 +76,25 @@ module.exports = function(User) {
                              console.log(err);
                          }
                          })
+                         User.app.models.Notify.find({Where:{RequestedBy:id}}, function (err, docs){
+                            if(err){
+                                console.log("3");
+                                throw err;
+                            }else{
+                                console.log(",.....dtata.....")
+                                console.log(docs)
+                                let array=[];
+                                docs.forEach((sample)=>{
+                                  if(sample.RequestedBy.toString() == id){
+                                    User.app.models.Notify.destroyById(sample.id,function(err) {
+                                    if (err){
+                                        console.log(err);
+                                    }
+                                    });
+                                  }
+                                })
+                            }
+                        });
                          User.app.models.RoleMapping.findOne({where:{principalId:id1}},function(err,res){
                              if(err){
                                  console.log(err);
