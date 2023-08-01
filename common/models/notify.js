@@ -194,7 +194,7 @@ module.exports = function(Notify) {
        returns:{arg:'user',type:'object'},
        http:{path:'/VerifyRequest',verb:'post'}
      });
-
+// delete the request of book
      Notify.DeleteNote=function(Book_id,RequestedBy_id,cb)
       {
        console.log(Book_id);
@@ -238,7 +238,7 @@ module.exports = function(Notify) {
        returns:{arg:'user',type:'object'},
        http:{path:'/DeleteNote',verb:'post'}
      });
-     
+ // to show book request status pending    
      Notify.PendingStatus=function(id,cb){
       //console.log('sample',id);
       Notify.find({RequestedBy:id}, function (err, docs){

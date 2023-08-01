@@ -190,8 +190,6 @@ module.exports = function(User) {
 
 
     };
-
-
        
 
 
