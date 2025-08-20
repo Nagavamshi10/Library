@@ -1,197 +1,232 @@
 'use strict';
-const email1 = require('../../server/email');
+const email = require('../../server/email');
+
 module.exports = function(User) {
-    // To create a remote hook for checking unqiue username ,RollNo
-    User.beforeRemote('create', function(ctx, data, next) {
-        console.log("before create");
-        //console.log(ctx.req.body);
-      const myUsername = ctx.req.body.Username;
-      const myRollNo = ctx.req.body.RollNo;
-      console.log(myUsername+" "+myRollNo);
-      User.findOne({ where: {Username: myUsername } }, function(err, result) {
-        if (err){
-            console.log("err 1");
-            return  next(err);
-        } 
-        //next(err);
-        if (result) {
-          const error = new Error(` This Username:'${myUsername}' already exists in the DB`);
-          error.statusCode = 422;
-          console.log("inside 1");
-          return next(error);
-        }
-      });
-      User.findOne({ where: { RollNo: myRollNo } }, function(err, result) {
-        if (err) return next(err);
-        if (result) {
-          const error = new Error(` This RollNo: '${myRollNo}' already exists in the DB`);
-          error.statusCode = 422;
-          console.log("inside 2");
-          return next(error);
-        }
-        //next();
-      });
+  // Validate unique username and roll number before creating user
+  User.beforeRemote('create', function(ctx, data, next) {
+    const username = ctx.req.body.Username;
+    const rollNo = ctx.req.body.RollNo;
+
+    if (!username || !rollNo) {
+      const error = new Error('Username and Roll Number are required');
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    // Use Promise.all to ensure both validations complete before proceeding
+    Promise.all([
+      new Promise((resolve, reject) => {
+        User.findOne({ where: { Username: username } }, function(err, existingUser) {
+          if (err) return reject(err);
+          if (existingUser) {
+            const error = new Error(`Username '${username}' already exists in the database`);
+            error.statusCode = 422;
+            return reject(error);
+          }
+          resolve();
+        });
+      }),
+      new Promise((resolve, reject) => {
+        User.findOne({ where: { RollNo: rollNo } }, function(err, existingUser) {
+          if (err) return reject(err);
+          if (existingUser) {
+            const error = new Error(`Roll Number '${rollNo}' already exists in the database`);
+            error.statusCode = 422;
+            return reject(error);
+          }
+          resolve();
+        });
+      })
+    ]).then(() => {
       next();
+    }).catch(err => {
+      next(err);
     });
+  });
 
-    // TO Map with Role after create user 
-    User.afterRemote('create', function(context,data,next) {
-        console.log(data);
-        //console.log("name :"+context.result.__data.Role);
-             const userID=data.id;
-                User.app.models.Role.findOne({where:{name:data.Role}},function(err,role){
-                    if(err) throw err;
-                    console.log(role);
-                    if(role!=null&&role.__data!=null){
-                        User.app.models.RoleMapping.create({
-                            principalType:User.app.models.RoleMapping.USER,
-                            principalId : userID,
-                            roleId:role.__data.id
-                            },function(err,result){
-                            if(err) throw err;
-                            console.log(result);
-                        });    
-                    }
-                })
-                next();
-            });
+  // Map user to role after user creation
+  User.afterRemote('create', function(context, userData, next) {
+    if (!userData || !userData.Role) {
+      return next();
+    }
 
-
-
-    User.DeleteUser=function(Username,id,cb){
-        //console.log(Book);
-        User.findOne({where:{Username:Username}},function(err,data){
-            if(err) {
-                cb(err);
-            }
-            else if(data!=null){
-                User.app.models.Book.find({where:{AssignedTo:{inq:[id]}}},function(err,role){
-                    if(err) throw err;
-                    console.log(role);
-                    if(role.length==0){
-                        console.log(data);
-                        let id1=data.__data.id;
-                        User.destroyById(id1,function(err){
-                         if(err){
-                             console.log(err);
-                         }
-                         })
-                         User.app.models.Notify.find({Where:{RequestedBy:id}}, function (err, docs){
-                            if(err){
-                                console.log("3");
-                                throw err;
-                            }else{
-                                console.log(",.....dtata.....")
-                                console.log(docs)
-                                let array=[];
-                                docs.forEach((sample)=>{
-                                  if(sample.RequestedBy.toString() == id){
-                                    User.app.models.Notify.destroyById(sample.id,function(err) {
-                                    if (err){
-                                        console.log(err);
-                                    }
-                                    });
-                                  }
-                                })
-                            }
-                        });
-                         User.app.models.RoleMapping.findOne({where:{principalId:id1}},function(err,res){
-                             if(err){
-                                 console.log(err);
-                             }
-                             let id2=res.id;
-                             console.log(res);
-                             User.app.models.RoleMapping.destroyById(id2,function(err){
-                                 if(err){
-                                     console.log(err);
-                                 }
-                             });
-                         });
-                        
-                        cb(err,{"message":"Successfully deleted"});
-                 
-                    }else{
-                        cb(err,{"message":"You can't delete The User."});
-                    }
-                })
-            }else{
-                console.log(data);
-                return  cb(err,{"message":"No such User Avaialble in the DB"});
-            }
-        })
-
-       }
+    const userId = userData.id;
     
-       User.remoteMethod('DeleteUser',
-      {
-        accepts:[{arg:'Username',type:'string',required: true },{arg:'id',type:'string',required: true }],
-        returns:{arg:'user',type:'object'},
-        http:{path:'/DeleteUser',verb:'post'}
+    User.app.models.Role.findOne({ where: { name: userData.Role } }, function(err, role) {
+      if (err) {
+        return next(err);
+      }
+
+      if (!role) {
+        return next();
+      }
+
+      User.app.models.RoleMapping.create({
+        principalType: User.app.models.RoleMapping.USER,
+        principalId: userId,
+        roleId: role.id
+      }, function(err, roleMapping) {
+        if (err) {
+          return next(err);
+        }
+        next();
       });
+    });
+  });
 
 
 
-      //forget password
+  // Delete user and clean up associated data
+  User.DeleteUser = function(username, userId, callback) {
+    if (!username || !userId) {
+      return callback(new Error('Username and User ID are required'));
+    }
 
-      User.forgetPassword=function(email,cb){
-        console.log(email);
-        User.findOne({where:{email:email}},function(err,data){
-            if(err) {
-                cb(err);
-            }
-            else if(data!=null){
-                    const to = email;
-                    const subject = 'Password Reset';
-                    const text = `Click the link  http://localhost:8080/reset?id=${data.id}` ;
-                    email1.sendEmail(to, subject, text);
-                    return cb(err,{"message":"Link sent to your mail"});
-            }else{
-              console.log(data);
-                return  cb(err,{"message":"No such User Avaialble in the DB"});
-            }
-        })
-  
-       }
-  
-  
-      User.remoteMethod('forgetPassword',
-      {
-        accepts:[{arg:'email',type:'string',required: true }],
-        returns:{arg:'user',type:'object'},
-        http:{path:'/forgetPassword',verb:'post'}
+    User.findOne({ where: { Username: username } }, function(err, user) {
+      if (err) {
+        return callback(err);
+      }
+
+      if (!user) {
+        return callback(null, { message: 'No such user available in the database' });
+      }
+
+      // Check if user has any assigned books
+      User.app.models.Book.find({ where: { AssignedTo: { inq: [userId] } } }, function(err, assignedBooks) {
+        if (err) {
+          return callback(err);
+        }
+
+        if (assignedBooks.length > 0) {
+          return callback(null, { message: "You can't delete the user. User has assigned books." });
+        }
+
+        // Proceed with deletion - use Promise.all for parallel cleanup
+        const userIdToDelete = user.id;
+
+        Promise.all([
+          // Delete user notifications
+          new Promise((resolve, reject) => {
+            User.app.models.Notify.find({ where: { RequestedBy: userId } }, function(err, notifications) {
+              if (err) return reject(err);
+              
+              if (notifications.length === 0) {
+                return resolve();
+              }
+
+              const deletePromises = notifications.map(notification => {
+                return new Promise((resolveDelete, rejectDelete) => {
+                  User.app.models.Notify.destroyById(notification.id, function(err) {
+                    if (err) return rejectDelete(err);
+                    resolveDelete();
+                  });
+                });
+              });
+
+              Promise.all(deletePromises).then(resolve).catch(reject);
+            });
+          }),
+
+          // Delete role mapping
+          new Promise((resolve, reject) => {
+            User.app.models.RoleMapping.findOne({ where: { principalId: userIdToDelete } }, function(err, roleMapping) {
+              if (err) return reject(err);
+              if (!roleMapping) return resolve();
+
+              User.app.models.RoleMapping.destroyById(roleMapping.id, function(err) {
+                if (err) return reject(err);
+                resolve();
+              });
+            });
+          }),
+
+          // Delete the user
+          new Promise((resolve, reject) => {
+            User.destroyById(userIdToDelete, function(err) {
+              if (err) return reject(err);
+              resolve();
+            });
+          })
+        ]).then(() => {
+          callback(null, { message: 'Successfully deleted' });
+        }).catch(err => {
+          callback(err);
+        });
       });
+    });
+  };
 
+  User.remoteMethod('DeleteUser', {
+    accepts: [
+      { arg: 'Username', type: 'string', required: true },
+      { arg: 'id', type: 'string', required: true }
+    ],
+    returns: { arg: 'user', type: 'object' },
+    http: { path: '/DeleteUser', verb: 'post' }
+  });
 
-      //reset password
-      User.resetPassword=function(id,password,cb){
-       // console.log(email);
-        User.findById(id,function(err,data){
-            if(err){
-                console.log(err);
-            }
-            data.updateAttribute('password',password,function(err,result){
-                if(err){
-                    console.log(err);
-                }
-                console.log(result);
-            })
-        return cb(err,{"message":"Successfully Reset"});
-        })
-  
-       }
-  
-  
-      User.remoteMethod('resetPassword',
-      {
-        accepts:[{arg:'id',type:'string',required: true },{arg:'password',type:'string',required: true }],
-        returns:{arg:'user',type:'object'},
-        http:{path:'/resetPassword',verb:'post'}
+  // Send password reset email
+  User.forgetPassword = function(userEmail, callback) {
+    if (!userEmail) {
+      return callback(new Error('Email is required'));
+    }
+
+    User.findOne({ where: { email: userEmail } }, function(err, user) {
+      if (err) {
+        return callback(err);
+      }
+
+      if (!user) {
+        return callback(null, { message: 'No such user available in the database' });
+      }
+
+      const subject = 'Password Reset';
+      const resetLink = `http://localhost:8080/reset?id=${user.id}`;
+      const text = `Click the link to reset your password: ${resetLink}`;
+      
+      email.sendEmail(userEmail, subject, text);
+      
+      callback(null, { message: 'Reset link sent to your email' });
+    });
+  };
+
+  User.remoteMethod('forgetPassword', {
+    accepts: [{ arg: 'email', type: 'string', required: true }],
+    returns: { arg: 'user', type: 'object' },
+    http: { path: '/forgetPassword', verb: 'post' }
+  });
+
+  // Reset user password
+  User.resetPassword = function(userId, newPassword, callback) {
+    if (!userId || !newPassword) {
+      return callback(new Error('User ID and new password are required'));
+    }
+
+    User.findById(userId, function(err, user) {
+      if (err) {
+        return callback(err);
+      }
+
+      if (!user) {
+        return callback(new Error('User not found'));
+      }
+
+      user.updateAttribute('password', newPassword, function(err, updatedUser) {
+        if (err) {
+          return callback(err);
+        }
+        
+        callback(null, { message: 'Password successfully reset' });
       });
+    });
+  };
 
-
-    };
-       
-
-
-
-
+  User.remoteMethod('resetPassword', {
+    accepts: [
+      { arg: 'id', type: 'string', required: true },
+      { arg: 'password', type: 'string', required: true }
+    ],
+    returns: { arg: 'user', type: 'object' },
+    http: { path: '/resetPassword', verb: 'post' }
+  });
+};
